@@ -25,7 +25,7 @@ import model_params
 
 logger = logging.getLogger(__name__)
 
-# python /Users/az/nupic-env/Bill/py/gustav.py /Users/az/nupic-env/Bill/input/test.aiff
+# python /Users/az/nupic-env/gustav/py/gustav.py /Users/az/nupic-env/gustav/input/test.aiff
 _METRIC_SPECS = (
     MetricSpec(field='amp', metric='multiStep',
                inferenceElement='multiStepBestPredictions',
