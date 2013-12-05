@@ -1,7 +1,7 @@
 
 # ----------------------------------------------------------------------
 
-MODEL_PARAMS = {
+GUSTAV_PARAMS = {
     # Type of model that the rest of these parameters apply to.
     'model': "CLA",
 

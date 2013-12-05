@@ -21,7 +21,9 @@ from numpy import array
 from scikits.audiolab.pysndfile._sndfile import Sndfile
 import sys
 
-import model_params
+import gustav_params
+
+SAVE_LOCATION = "/Users/az/nupic-env/gustav/brains/scale"
 
 logger = logging.getLogger(__name__)
 
@@ -34,16 +36,19 @@ _METRIC_SPECS = (
 
 
 def createModel():
-  return ModelFactory.create(model_params.MODEL_PARAMS)
+
+  return ModelFactory.loadFromCheckpoint(SAVE_LOCATION)
+  #return ModelFactory.create(model_params.MODEL_PARAMS)
 
 
+#  855040
 def perform(output_file, frames):
     model = createModel()
 
     model.enableInference({'predictedField': 'amp'})
 
 
-    input = float(0.1)
+    input = float(0.0)
     output = [input]
 
     for i in range(frames):
@@ -88,17 +93,24 @@ def practice(file_name):
     count = 0
     #frames = data.read_frames(1000)
 
-    total_batches = 100
+    batch_count = 0
 
+    nframes = f.nframes
+
+    logger.info("Reading %s frames", nframes)
     actual = f.read_frames(1000, dtype=numpy.float64)
-    batch_count = 1
+    total_batches = nframes / 1000
     while batch_count <= total_batches:
+
+        logger.info("%s percent done", 100 * float(batch_count) / float(total_batches))
+        logger.info(metricsManager)
+
         for i, record2 in actual:
             #print record
 
-            count += 1
-            if count % 100 == 0:
-                logger.info("frame %s, Prediction: %s [%s]", count, str(prediction), record2)
+            #count += 1
+            #if count % 100  == 0:
+            #    logger.info("frame %s, Prediction: %s [%s]", count, str(prediction), record2)
 
             modelInput = {'amp': record2}
             #logger.info("Passing in %s", modelInput["audio"])
@@ -108,7 +120,7 @@ def practice(file_name):
 
             prediction = result.inferences['prediction']
 
-            #result.metrics = metricsManager.update(result)
+            result.metrics = metricsManager.update(result)
 
 
             raw.append(record2)
@@ -147,7 +159,7 @@ def practice(file_name):
     data = array(predicted)
     f.write_frames(data)
 
-    model.save("/Users/az/nupic-env/Bill/brains/test")
+    model.save("%s" % SAVE_LOCATION)
 
 
 if __name__ == "__main__":
